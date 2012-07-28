@@ -20,8 +20,10 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: "changeme" }));
+  app.use(express.csrf());
 });
-
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
@@ -42,6 +44,15 @@ app.get('/', function(req, res){
 });
 app.get('/blog/new', function(req, res){
     res.render('blog_new.jade', {
-        title: 'New Post'
+        title: 'New Post',
+		token:req.session._csrf
+    });
+});
+app.post('/blog/new', function(req, res){
+    articleProvider.save({
+        title: req.param('title'),
+        body: req.param('body')
+    }, function( error, docs) {
+        res.redirect('/')
     });
 });
