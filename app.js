@@ -32,7 +32,7 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
-var articleProvider= new ArticleProvider();
+var articleProvider= new ArticleProvider('localhost',27017);
 
 app.get('/', function(req, res){
     articleProvider.findAll( function(error,docs){
@@ -56,3 +56,23 @@ app.post('/blog/new', function(req, res){
         res.redirect('/')
     });
 });
+app.get('/blog/:id',function(req,res){
+	articleProvider.findById(req,params.id,function(error,article){
+		res.render('blog_show.jade',
+		{locals:{
+			title:article.title,
+			article:article
+		}}
+		);
+	})
+})
+app.post('/blog/addComment',function(req,res){
+	articleProvider.addCommentToArticle(req.params('_id'),{
+		person:req.params('person'),
+		comment:req.params('comment'),
+		created_at:new Date()
+	},function(error,docs){
+		res.redirect('/blog/'+req.params('_id'))
+	})
+})
+//console.log("express server listening on port %d in %s mode",app.address().port,app.setting.env);
