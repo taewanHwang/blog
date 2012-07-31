@@ -2,12 +2,16 @@ blog
 ====
 
 NodeJS+Express+mongoDB test
-//stylus apply
-express -c stylus
+Stylus apply
+>express -c stylus
 
-//install dependent module
-npm install -d
-npm install connect
+Install dependent module
+>npm install -d
+>npm install connect
 
-//start node
-node app.js
+To start node
+>node app.js
+
+
+Node Mongolian
+https://github.com/marcello3d/node-mongolian
