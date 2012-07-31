@@ -2,17 +2,18 @@
 /*
  * GET home page.
  */
-var ArticleProvider = require('../articleprovider-mongodb').ArticleProvider;
-var articleProvider = new ArticleProvider('localhost', 27017);
+var ArticleProvider = require('../articleprovider-mongolian').ArticleProvider;
+var articleProvider = new ArticleProvider('localhost', 27017,'node-blog');
 var fs = require('fs');
 var im = require('imagemagick');
 var path = require('path');
+var util = require('util');
 
 exports.index = function(req, res){
     articleProvider.findAll( function(error,docs){
         res.render('index.jade', { 
-	        title: 'Blog',
-	        articles:docs
+        	        title: 'Blog',
+        	        articles:docs
         });
     })
 };
@@ -28,7 +29,8 @@ exports.blog = {
 			articleProvider.save({
 		        title: req.param('title'),
 		        body: req.param('body')
-		    }, function( error, docs) {
+		    }, function( err, docs) {
+				if(err) throw err
 		        res.redirect('/')
 		    });
 		}
@@ -83,14 +85,27 @@ exports.fileUpload = function(req,res) {
     });
 }
 exports.gallery = function(req,res) {
-	var base ='/Users/Macbook/Documents/NodeJS/blog/images'
-	im.convert([path.join(base,'test.jpg'), '-resize', '25x120', path.join(base,'test-small.jpg')], 
-	function(err, metadata){
-	  if (err) throw err
-	  res.send(metadata);
-	})
-	
-		/*
+	var base ='/Users/Macbook/Documents/NodeJS/blog/images/thumbnail';
+	var file_path = path.join(base,'small_test2.jpg');
+	// fs.stat(file_path,function(err,stat){
+	// 	if(err) throw err
+	// 	res.writeHead(200,{
+	// 		'Content-Type' : 'image/gif',
+	// 		'Content-Length' : stat.size
+	// 	})
+	// 	var rs = fs.createReadStream(file_path);
+	// 	util.pump(rs,res,function(err){
+	// 		if(err) throw err;
+	// 	})
+	// });	
+	fs.readFile(file_path, function(err, data) {
+		if(err) throw err
+		res.header('Content-Type', 'image/jpg');
+		res.end(data,'binary')
+	});
+  
+}
+/*
 	fs.readdir(base,function(err,files){
 		if(err) throw err;
 		else{
@@ -115,7 +130,6 @@ exports.gallery = function(req,res) {
         res.end(stdout, 'binary');
 	});
 	*/
-}
 /*
 // we need the fs module for moving the uploaded files
 */
