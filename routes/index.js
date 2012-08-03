@@ -55,7 +55,26 @@ exports.blog = {
             });
 		}
 }
+exports.removeAllAlbums = function(req,res){
+	articleProvider.removeAllAlbums(function(err){
+		if(err) throw err
+		else{
+			res.redirect('/');
+		}
+	})
+}
 exports.fileUpload = function(req,res) {
+	articleProvider.saveFile({
+		req:req,
+	},function(err){
+		if(err) throw err;
+		else{
+			res.redirect('/');
+		}
+	});
 }
 exports.gallery = function(req,res) {
+	articleProvider.loadImages(function(err){
+		
+	})
 }

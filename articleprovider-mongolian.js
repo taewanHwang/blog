@@ -2,14 +2,13 @@ var Mongolian = require("mongolian");
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
+var im = require('imagemagick');
 
 ArticleProvider = function(host, port,dbname) {
 	
 	var server = new Mongolian
 	this.db = server.db(dbname);
 	this.article = this.db.collection("article");
-	// Drop Database for debug
-	// dropDatabase();
 };
 
 function dropDatabase(){
@@ -17,6 +16,22 @@ function dropDatabase(){
 		if(err) throw err;
 		else console.log(value);
 	})
+}
+
+ArticleProvider.prototype.removeAllAlbums = function(){
+	this.article.drop(function(err,callback){
+		if(err) throw err;
+		else{
+			callback(null);
+		}
+	});
+}
+ArticleProvider.prototype.createAlbum = function(req,callback) {
+	var album={
+		title:req.params('title'),
+		photos:[],
+	}
+	this.article.insert([album]);
 }
 ArticleProvider.prototype.findAll = function(callback) {
 	this.article.find().toArray(function(err,results){
@@ -59,7 +74,31 @@ ArticleProvider.prototype.addCommentToArticle = function(articleId, comment, cal
 		});
 };
 
-ArticleProvider.prototype.saveFile = function(filepath,callback) {
-};
+ArticleProvider.prototype.saveFile = function(req,callback) {
+	var tmp_path = path.join(path.resolve(__dirname),req.files.thumbnail.path)
+	var filename = req.files.thumbnail.name;
+	var raw_target_path = path.join(path.resolve(__dirname),'public/images/upload/raw',filename);
+	var thumb_target_path = path.join(path.resolve(__dirname),'public/images/upload/thumbnail','thumbnail_'+filename);
+	fs.rename(tmp_path, raw_target_path, function(err) {
+		if(err) throw err
+		else{
+			fs.unlink(tmp_path, function() {
+				if (err) throw err;
+				else{
+					im.resize({
+						srcPath:raw_target_path,
+						dstPath:thumb_target_path,
+						width:256,
+					},function(err,stdout,stderr){
+						if(err) throw err;
+						else{
+							callback(null);
+						}
+					})
+				}
+			})
+		}
+	});
+}
 
 exports.ArticleProvider = ArticleProvider;

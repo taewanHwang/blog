@@ -41,4 +41,5 @@ app.get('/blog/:id', routes.blog.id);
 app.post('/blog/addComment', routes.blog.addComment);
 app.post('/file-upload', routes.fileUpload);
 app.get('/gallery',routes.gallery)
+app.get('/reset',routes.removeAllAlbums)
 app.listen(3000);
