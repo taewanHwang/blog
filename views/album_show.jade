@@ -1,11 +1,13 @@
 extends layout
 
 block content
-  h1= title
+  h1="Album "+result.title
   div.article
     div.add_photo
       a(href="/addPhoto/"+result._id) add photo
-    div.title= result.title
     div.created_at= result.created_at
+    div.photos
+      - each photo in result.photos
+        img(src="/images/upload/thumbnail/thumbnail_"+photo)
 
 

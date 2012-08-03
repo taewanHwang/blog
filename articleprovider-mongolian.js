@@ -57,32 +57,6 @@ ArticleProvider.prototype.findById = function(id, callback) {
 	});
 };
 
-ArticleProvider.prototype.save = function(articles, callback) {
-	if( typeof(articles.length)=="undefined")
-	  articles = [articles];
-
-	for( var i =0;i< articles.length;i++ ) {
-	article = articles[i];
-	article.created_at = new Date();
-	if( article.comments === undefined ) article.comments = [];
-		for(var j =0;j< article.comments.length; j++) {
-			article.comments[j].created_at = new Date();
-		}
-	}
-
-	this.article.insert(articles);
-	callback(null);
-};
-ArticleProvider.prototype.addCommentToArticle = function(articleId, comment, callback) {
-	this.article.update(
-		{_id: article_collection.db.bson_serializer.ObjectID.createFromHexString(articleId)},
-		{"$push": {comments: comment}},
-		function(error, article){
-			if( error ) callback(error);
-			else callback(null, article)
-		});
-};
-
 ArticleProvider.prototype.addPhoto = function(req,callback) {
 	var tmp_path = path.join(path.resolve(__dirname),req.files.thumbnail.path)
 	var filename = req.files.thumbnail.name;

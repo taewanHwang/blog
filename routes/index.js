@@ -11,10 +11,10 @@ var path = require('path');
 var util = require('util');
 
 exports.index = function(req, res){
-    articleProvider.findAll( function(error,docs){
+    articleProvider.findAll( function(error,results){
         res.render('index.jade', { 
         	        title: 'Album List',
-        	        articles:docs
+        	        results:results
         });
     })
 };
@@ -59,15 +59,6 @@ exports.album = {
 			})
 		}
 	},
-	addComment:function(req,res){
-    	articleProvider.addCommentToArticle(req.param('_id'), {
-	        person: req.param('person'),
-	        comment: req.param('comment'),
-	        created_at: new Date()
-	        } , function( error, docs) {
-	             res.redirect('/blog/' + req.param('_id'))
-            });
-		}
 }
 exports.removeAllAlbums = function(req,res){
 	articleProvider.removeAllAlbums(function(err){
@@ -75,20 +66,5 @@ exports.removeAllAlbums = function(req,res){
 		else{
 			res.redirect('/');
 		}
-	})
-}
-exports.fileUpload = function(req,res) {
-	articleProvider.saveFile({
-		req:req,
-	},function(err){
-		if(err) throw err;
-		else{
-			res.redirect('/');
-		}
-	});
-}
-exports.gallery = function(req,res) {
-	articleProvider.loadImages(function(err){
-		
 	})
 }

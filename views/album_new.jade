@@ -2,23 +2,6 @@ extends layout
 
 block content
   h1= title
-  //
-    form( method="post")
-    div
-      input(type='hidden', name='_csrf', value=token)
-      div
-        span Title :
-        input(type="text", name="title", id="editArticleTitle")
-      div
-        span Body :
-        textarea( name="body", rows=20, id="editArticleBody)
-      div
-        span Image:
-        input(type="file", name="image", id="editArticleImage")
-        div#editArticleImageState
-
-      div#editArticleSubmit
-        input(type="submit", value="Send")
   form( method="post")
     input(type='hidden', name='_csrf', value=token)
     div 

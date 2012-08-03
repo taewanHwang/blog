@@ -3,9 +3,9 @@ extends layout
 block content
   h1= title
   #articles
-    - each article in articles
+    - each result in results
       div.article
-        div.created_at= article.created_at
+        div.created_at= result.created_at
         div.title 
-            a(href="/album/"+article._id)!= article.title
-        div.body= article.body
+            a(href="/album/"+result._id)!= result.title+'('+result.photos.length+')'
+        div.body= result.body
