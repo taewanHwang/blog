@@ -5,7 +5,6 @@
 var ArticleProvider = require('../articleprovider-mongolian').ArticleProvider;
 var articleProvider = new ArticleProvider('localhost', 27017,'node-blog');
 var fs = require('fs');
-require("read-files");
 var im = require('imagemagick');
 var path = require('path');
 var util = require('util');

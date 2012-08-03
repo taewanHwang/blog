@@ -58,6 +58,10 @@ ArticleProvider.prototype.findById = function(id, callback) {
 };
 
 ArticleProvider.prototype.addPhoto = function(req,callback) {
+	console.log(util.inspect(req));
+	console.log(util.inspect(req.files.thumbnail));
+	console.log(util.inspect(req.files.thumbnail.length));
+	
 	var tmp_path = path.join(path.resolve(__dirname),req.files.thumbnail.path)
 	var filename = req.files.thumbnail.name;
 	var raw_target_path = path.join(path.resolve(__dirname),'public/images/upload/raw',filename);
