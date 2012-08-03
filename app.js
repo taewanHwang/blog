@@ -35,11 +35,13 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 app.get('/', routes.index);
-app.get('/blog/new',routes.blog.new.get);
-app.post('/blog/new',routes.blog.new.post);
-app.get('/blog/:id', routes.blog.id);
-app.post('/blog/addComment', routes.blog.addComment);
-app.post('/file-upload', routes.fileUpload);
-app.get('/gallery',routes.gallery)
-app.get('/reset',routes.removeAllAlbums)
+app.get('/album/new',routes.album.new.get);
+app.post('/album/new',routes.album.new.post);
+app.get('/album/:id', routes.album.id);
+app.get('/addPhoto/:id',routes.album.addPhoto.get)
+app.post('/addPhoto/:id',routes.album.addPhoto.post)
+// app.post('/blog/addComment', routes.blog.addComment);
+// app.post('/file-upload', routes.fileUpload);
+// app.get('/gallery',routes.gallery)
+// app.get('/reset',routes.removeAllAlbums)
 app.listen(3000);

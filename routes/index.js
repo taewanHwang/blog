@@ -13,23 +13,22 @@ var util = require('util');
 exports.index = function(req, res){
     articleProvider.findAll( function(error,docs){
         res.render('index.jade', { 
-        	        title: 'Blog',
+        	        title: 'Album List',
         	        articles:docs
         });
     })
 };
-exports.blog = {
+exports.album = {
 	new :{
 		get:function(req,res){
-		    res.render('blog_new.jade', {
-		        title: 'New Post',
+		    res.render('album_new.jade', {
+		        title: 'New Album',
 				token:req.session._csrf
 		    });
 		},
 		post:function(req,res){
-			articleProvider.save({
+			articleProvider.createAlbum({
 		        title: req.param('title'),
-		        body: req.param('body')
 		    }, function( err, docs) {
 				if(err) throw err
 		        res.redirect('/')
@@ -37,13 +36,28 @@ exports.blog = {
 		}
 	},
 	id:function(req,res){
-	    articleProvider.findById(req.params.id, function(error, article) {
-	        res.render('blog_show.jade', {
-	            title: article.title,
-	            article:article,
+	    articleProvider.findById(req.params.id, function(error, result) {
+			console.log(util.inspect(result)+" in index.js/id");
+	        res.render('album_show.jade', {
+				result:result,
+				title:'Album',
 				token: req.session._csrf,
 	        });
 	    });		
+	},
+	addPhoto: {
+		get:function(req,res) {
+		    res.render('add_photo.jade', {
+		        title: 'Add Photo',
+				token:req.session._csrf
+		    });
+		},
+		post:function(req,res){
+			articleProvider.addPhoto(req,function(err){
+				if(err) throw err;
+				res.redirect('/album/'+req.params.id);
+			})
+		}
 	},
 	addComment:function(req,res){
     	articleProvider.addCommentToArticle(req.param('_id'), {

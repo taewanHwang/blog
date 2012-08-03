@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= title
+  form( method="post",enctype="multipart/form-data")
+    input(type='hidden', name='_csrf', value=token)
+    input(type="file",name="thumbnail",multiple="multiple")
+    input(type="submit")

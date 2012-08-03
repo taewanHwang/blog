@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  div.article
+    div.add_photo
+      a(href="/addPhoto/"+result._id) add photo
+    div.title= result.title
+    div.created_at= result.created_at
+
+
