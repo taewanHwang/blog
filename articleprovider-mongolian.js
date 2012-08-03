@@ -1,23 +1,19 @@
-// var Db = require('mongodb').Db;
-// var Connection = require('mongodb').Connection;
-// var Server = require('mongodb').Server;
-// var BSON = require('mongodb').BSON;
-// var ObjectID = require('mongodb').ObjectID;
 var Mongolian = require("mongolian");
+var fs = require('fs');
+var path = require('path');
+var util = require('util');
 
 ArticleProvider = function(host, port,dbname) {
 	
 	var server = new Mongolian
-	var db = server.db(dbname);
-
-	// Set some collections
-	this.article = db.collection("article");
+	this.db = server.db(dbname);
+	this.article = this.db.collection("article");
 	// Drop Database for debug
-	//dropDatabase(db);
+	// dropDatabase();
 };
 
-function dropDatabase(db){
-	db.dropDatabase(function(err,value){
+function dropDatabase(){
+	this.db.dropDatabase(function(err,value){
 		if(err) throw err;
 		else console.log(value);
 	})
@@ -61,6 +57,9 @@ ArticleProvider.prototype.addCommentToArticle = function(articleId, comment, cal
 			if( error ) callback(error);
 			else callback(null, article)
 		});
+};
+
+ArticleProvider.prototype.saveFile = function(filepath,callback) {
 };
 
 exports.ArticleProvider = ArticleProvider;

@@ -5,6 +5,7 @@
 var ArticleProvider = require('../articleprovider-mongolian').ArticleProvider;
 var articleProvider = new ArticleProvider('localhost', 27017,'node-blog');
 var fs = require('fs');
+require("read-files");
 var im = require('imagemagick');
 var path = require('path');
 var util = require('util');
@@ -55,81 +56,6 @@ exports.blog = {
 		}
 }
 exports.fileUpload = function(req,res) {
-    // get the temporary location of the file
-    var tmp_path = req.files.thumbnail.path;
-    // set where the file should actually exists - in this case it is in the "images" directory
-    var raw_target_path = path.join(path.resolve(__dirname,'..'),'images','raw',req.files.thumbnail.name);
-	var thumb_target_path = path.join(path.resolve(__dirname,'..'),'images','thumbnail','small_'+req.files.thumbnail.name);
-    // move the file from the temporary location to the intended location
-    fs.rename(tmp_path, raw_target_path, function(err) {
-        if (err) throw err;
-		else{
-	        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-	        fs.unlink(tmp_path, function() {
-	            if (err) throw err;
-				else{
-					im.resize({
-						srcPath: raw_target_path,
-						dstPath: thumb_target_path,
-						width:256
-					},function(err,stdout,stderr){
-						if(err) throw err
-						else{
-				            res.send('Raw File uploaded to: ' + raw_target_path +'\n Thumbnail File uploaded to  '+ thumb_target_path+' - ' + req.files.thumbnail.size + ' bytes');							
-						}
-					})
-				}
-	        });			
-			// make thumbnail image file
-		}
-    });
 }
 exports.gallery = function(req,res) {
-	var base ='/Users/Macbook/Documents/NodeJS/blog/images/thumbnail';
-	var file_path = path.join(base,'small_test2.jpg');
-	// fs.stat(file_path,function(err,stat){
-	// 	if(err) throw err
-	// 	res.writeHead(200,{
-	// 		'Content-Type' : 'image/gif',
-	// 		'Content-Length' : stat.size
-	// 	})
-	// 	var rs = fs.createReadStream(file_path);
-	// 	util.pump(rs,res,function(err){
-	// 		if(err) throw err;
-	// 	})
-	// });	
-	fs.readFile(file_path, function(err, data) {
-		if(err) throw err
-		res.header('Content-Type', 'image/jpg');
-		res.end(data,'binary')
-	});
-  
 }
-/*
-	fs.readdir(base,function(err,files){
-		if(err) throw err;
-		else{
-			res.send('hello gallery');
-			console.log(files);
-			for(var i in files){
-				var filename = files[i];
-				if(filename.indexOf('.jpg')!=-1){
-					console.log(filename);
-					res.send('helloWorld');
-				}
-			}
-		}
-	});
-	im.resize({
-	  srcPath: filePath,
-	  width:   256,
-	  height:256
-	}, function(err, stdout, stderr){
-	  if (err) throw err
-        res.contentType("image/jpeg");
-        res.end(stdout, 'binary');
-	});
-	*/
-/*
-// we need the fs module for moving the uploaded files
-*/

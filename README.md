@@ -12,6 +12,9 @@ Install dependent module
 To start node
 >node app.js
 
+To start mongodb
+>cd documents/bin
+>./mongod
 
 Node Mongolian
 https://github.com/marcello3d/node-mongolian

@@ -1,3 +1,4 @@
+
 /**
  * Module dependencies.
  */
@@ -24,6 +25,7 @@ app.configure(function(){
 
   app.use(express.csrf());
 });
+
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 

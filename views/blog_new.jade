@@ -2,7 +2,8 @@ extends layout
 
 block content
   h1= title
-  form( method="post")
+  //
+    form( method="post")
     div
       input(type='hidden', name='_csrf', value=token)
       div
@@ -20,5 +21,5 @@ block content
         input(type="submit", value="Send")
   form( method="post",enctype="multipart/form-data",action="/file-upload")
     input(type='hidden', name='_csrf', value=token)
-    input(type="file",name="thumbnail")
+    input(type="file",name="thumbnail",multiple="multiple")
     input(type="submit")
