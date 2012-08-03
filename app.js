@@ -4,7 +4,7 @@
  */
 
 var express = require('express'),
-	routes = require('./routes');
+	router = require('./routes/router');
 
 
 var app = module.exports = express.createServer();
@@ -34,11 +34,11 @@ app.configure('development', function(){
 app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
-app.get('/', routes.index);
-app.get('/album/new',routes.album.new.get);
-app.post('/album/new',routes.album.new.post);
-app.get('/album/:id', routes.album.id);
-app.get('/addPhoto/:id',routes.album.addPhoto.get)
-app.post('/addPhoto/:id',routes.album.addPhoto.post)
-// app.get('/reset',routes.removeAllAlbums)
+app.get('/', router.index);
+app.get('/album/new',router.album.new.get);
+app.post('/album/new',router.album.new.post);
+app.get('/album/:id', router.album.id);
+app.get('/addPhoto/:id',router.album.addPhoto.get)
+app.post('/addPhoto/:id',router.album.addPhoto.post)
+// app.get('/reset',router.removeAllAlbums)
 app.listen(3000);
