@@ -60,11 +60,26 @@ function isArray(a)
 {
 	return Object.prototype.toString.apply(a) === '[object Array]';
 }
-ArticleProvider.prototype.addPhoto = function(req,callback) {
-	var files=req.files.thumbnail;
-	var article = this.article;
-	var count=0;
-	if(!isArray(files)) files=[files];
+function fileStatusCheck(files,callback){
+	var totalFileLength=0;
+	var totalFileSize=0;
+	async.forEachSeries(files,
+		function(file,callback){
+			totalFileLength+=file.length;
+			totalFileSize+=file.size;
+			//100mb limitation announce in app.js
+			if(totalFileSize>100*1024*1024){
+				callback('Upload Size Limitation')
+			}
+			callback(null);
+			
+		},function(err){
+			if(err) callback(err);
+			callback(null)
+			}
+	);
+}
+function fileUpload(article,req,files,callback){
 	async.forEachSeries(files,
 		function(file,callback){
 			var tmp_path = path.join(path.resolve(__dirname),file.path)
@@ -93,9 +108,26 @@ ArticleProvider.prototype.addPhoto = function(req,callback) {
 				});
 			});
 		},function(err){
-			if(err) throw err;
+			if(err) throw callback(err);
 			callback(null);
 		}
 	);	
+}
+ArticleProvider.prototype.addPhoto = function(req,callback) {
+	var files=req.files.thumbnail;
+	if(!isArray(files)) files=[files];
+	var totalFileLength=0;
+	var totalFileSize=0;
+	var article = this.article;
+	async.series([
+		function(callback){
+			fileStatusCheck(files,callback);
+		},function(callback){
+			fileUpload(article,req,files,callback);
+		}],
+		function(err){
+			if(err) throw err;
+			callback(null);
+		});
 }
 exports.ArticleProvider = ArticleProvider;

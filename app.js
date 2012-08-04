@@ -5,7 +5,7 @@
 
 var express = require('express'),
 	router = require('./routes/router');
-
+var util=require('util');
 
 var app = module.exports = express.createServer();
 
@@ -14,6 +14,7 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.use(express.limit('100mb'));//make limit in provider ....js
   app.use(express.bodyParser({uploadDir:'./uploads'}));
   app.use(express.methodOverride());
   // setting for csrf
@@ -25,7 +26,6 @@ app.configure(function(){
 
   app.use(express.csrf());
 });
-
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
