@@ -8,6 +8,9 @@ block content
     div.created_at= result.created_at
     div.photos
       - each photo in result.photos
-        img(src="/images/upload/thumbnail/thumbnail_"+photo)
+        img(src="/images/upload/thumbnail/thumbnail_"+photo.name)
+        //
+          p=photo.photographed_at
+          p=photo.created_at
 
 

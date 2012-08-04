@@ -10,6 +10,7 @@ ArticleProvider = function(host, port,dbname) {
 	var server = new Mongolian
 	this.db = server.db(dbname);
 	this.article = this.db.collection("article");
+	// this.article.drop();
 };
 ArticleProvider.prototype.removeAllAlbums = function(){
 	this.article.drop(function(err,callback){
@@ -124,9 +125,9 @@ function fileUpload(article,req,files,callback){
 								{_id:albumId},
 								{"$push":{
 									photos:{
-										photo:filename,
+										name:filename,
 										photographed_at:photographed_at,
-										create_at:new Date()
+										created_at:new Date()
 									}
 								}},function(err,result){
 									if(err) throw err;
