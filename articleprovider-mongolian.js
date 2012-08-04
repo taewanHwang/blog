@@ -110,28 +110,36 @@ function fileSizeCheck(files,callback){
 function fileUpload(article,req,files,callback){
 	async.forEachSeries(files,
 		function(file,callback){
-			var tmp_path = path.join(path.resolve(__dirname),file.path)
-			var filename = file.name;
-			var raw_target_path = path.join(path.resolve(__dirname),'public/images/upload/raw',filename);
-			var thumb_target_path = path.join(path.resolve(__dirname),'public/images/upload/thumbnail','thumbnail_'+filename);
-			fs.rename(tmp_path, raw_target_path, function(err) {
-				if(err) throw err
-				fs.unlink(tmp_path, function() {
-					if (err) throw err;
-					im.resize({
-						srcPath:raw_target_path,
-						dstPath:thumb_target_path,
-						width:256,
-					},function(err,stdout,stderr){
-						if(err) throw err;
-						var albumId = new ObjectId(req.params.id);
-						article.update(
-							{_id:albumId},
-							{"$push":{photos:filename}},
-							function(err,result){
-								if(err) throw err;
-								callback();
-							});
+			var tmp_path = path.join(path.resolve(__dirname),file.path);
+			fs.stat(tmp_path,function(err,stat){
+				if(err) throw err;
+				var photographed_at = stat.mtime;
+				var filename = file.name;
+				var raw_target_path = path.join(path.resolve(__dirname),'public/images/upload/raw',filename);
+				var thumb_target_path = path.join(path.resolve(__dirname),'public/images/upload/thumbnail','thumbnail_'+filename);
+				fs.rename(tmp_path, raw_target_path, function(err) {
+					if(err) throw err
+					fs.unlink(tmp_path, function() {
+						if (err) throw err;
+						im.resize({
+							srcPath:raw_target_path,
+							dstPath:thumb_target_path,
+							width:256,
+						},function(err,stdout,stderr){
+							if(err) throw err;
+							var albumId = new ObjectId(req.params.id);
+							article.update(
+								{_id:albumId},
+								{"$push":{
+									photos:filename,
+									photographed_at:photographed_at,
+									created_at:new Date(),
+									}
+								},function(err,result){
+									if(err) throw err;
+									callback();
+								});
+						});
 					});
 				});
 			});
