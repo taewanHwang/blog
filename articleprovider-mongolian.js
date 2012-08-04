@@ -61,8 +61,36 @@ function isArray(a)
 	return Object.prototype.toString.apply(a) === '[object Array]';
 }
 function fileStatusCheck(files,callback){
+	async.series([
+		function(callback){
+			fileTypeCheck(files,callback);
+		},function(callback){
+			fileSizeCheck(files,callback);
+		}],
+		function(err){
+			if(err) callback(err);
+			callback(null);
+		}
+	);
+}
+function fileTypeCheck(files,callback){
+	async.forEachSeries(files,
+		function(file,callback){
+			if(file.type.indexOf('image')==-1){
+				callback('You can only upload Image files');
+			}
+			callback(null);
+			
+		},function(err){
+			if(err) callback(err);
+			callback(null)
+			}
+	);
+}
+function fileSizeCheck(files,callback){
 	var totalFileLength=0;
 	var totalFileSize=0;
+	//total file size limitation check
 	async.forEachSeries(files,
 		function(file,callback){
 			totalFileLength+=file.length;
@@ -116,8 +144,6 @@ function fileUpload(article,req,files,callback){
 ArticleProvider.prototype.addPhoto = function(req,callback) {
 	var files=req.files.thumbnail;
 	if(!isArray(files)) files=[files];
-	var totalFileLength=0;
-	var totalFileSize=0;
 	var article = this.article;
 	async.series([
 		function(callback){
@@ -128,6 +154,7 @@ ArticleProvider.prototype.addPhoto = function(req,callback) {
 		function(err){
 			if(err) throw err;
 			callback(null);
-		});
+		}
+	);
 }
 exports.ArticleProvider = ArticleProvider;

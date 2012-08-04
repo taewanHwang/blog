@@ -36,7 +36,6 @@ exports.album = {
 	},
 	id:function(req,res){
 	    articleProvider.findById(req.params.id, function(error, result) {
-			console.log(util.inspect(result)+" in index.js/id");
 	        res.render('album_show.jade', {
 				result:result,
 				title:'Album',
