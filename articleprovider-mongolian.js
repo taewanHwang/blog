@@ -4,7 +4,7 @@ var ObjectId =  require('mongolian').ObjectId;
 var path = require('path');
 var util = require('util');
 var im = require('imagemagick');
-
+var async = require('async');
 ArticleProvider = function(host, port,dbname) {
 	
 	var server = new Mongolian
@@ -56,39 +56,46 @@ ArticleProvider.prototype.findById = function(id, callback) {
 		}
 	});
 };
-
-ArticleProvider.prototype.addPhoto = function(req,callback) {
-	console.log(util.inspect(req));
-	console.log(util.inspect(req.files.thumbnail));
-	console.log(util.inspect(req.files.thumbnail.length));
-	
-	var tmp_path = path.join(path.resolve(__dirname),req.files.thumbnail.path)
-	var filename = req.files.thumbnail.name;
-	var raw_target_path = path.join(path.resolve(__dirname),'public/images/upload/raw',filename);
-	var thumb_target_path = path.join(path.resolve(__dirname),'public/images/upload/thumbnail','thumbnail_'+filename);
-	var article = this.article;
-	fs.rename(tmp_path, raw_target_path, function(err) {
-		if(err) throw err
-		fs.unlink(tmp_path, function() {
-			if (err) throw err;
-			im.resize({
-				srcPath:raw_target_path,
-				dstPath:thumb_target_path,
-				width:256,
-			},function(err,stdout,stderr){
-				if(err) throw err;
-				var albumId = new ObjectId(req.params.id);
-				article.update(
-					{_id:albumId},
-					{"$push":{photos:filename}},
-					function(err,result){
-						if(err) throw err;
-						console.log(result);
-						callback(null)
-					});
-			});
-		});
-	});
+function isArray(a)
+{
+	return Object.prototype.toString.apply(a) === '[object Array]';
 }
-
+ArticleProvider.prototype.addPhoto = function(req,callback) {
+	var files=req.files.thumbnail;
+	var article = this.article;
+	var count=0;
+	if(!isArray(files)) files=[files];
+	async.forEachSeries(files,
+		function(file,callback){
+			var tmp_path = path.join(path.resolve(__dirname),file.path)
+			var filename = file.name;
+			var raw_target_path = path.join(path.resolve(__dirname),'public/images/upload/raw',filename);
+			var thumb_target_path = path.join(path.resolve(__dirname),'public/images/upload/thumbnail','thumbnail_'+filename);
+			fs.rename(tmp_path, raw_target_path, function(err) {
+				if(err) throw err
+				fs.unlink(tmp_path, function() {
+					if (err) throw err;
+					im.resize({
+						srcPath:raw_target_path,
+						dstPath:thumb_target_path,
+						width:256,
+					},function(err,stdout,stderr){
+						if(err) throw err;
+						var albumId = new ObjectId(req.params.id);
+						article.update(
+							{_id:albumId},
+							{"$push":{photos:filename}},
+							function(err,result){
+								if(err) throw err;
+								callback();
+							});
+					});
+				});
+			});
+		},function(err){
+			if(err) throw err;
+			callback(null);
+		}
+	);	
+}
 exports.ArticleProvider = ArticleProvider;
