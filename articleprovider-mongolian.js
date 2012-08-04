@@ -11,14 +11,6 @@ ArticleProvider = function(host, port,dbname) {
 	this.db = server.db(dbname);
 	this.article = this.db.collection("article");
 };
-
-function dropDatabase(){
-	this.db.dropDatabase(function(err,value){
-		if(err) throw err;
-		else console.log(value);
-	})
-}
-
 ArticleProvider.prototype.removeAllAlbums = function(){
 	this.article.drop(function(err,callback){
 		if(err) throw err;
@@ -131,11 +123,12 @@ function fileUpload(article,req,files,callback){
 							article.update(
 								{_id:albumId},
 								{"$push":{
-									photos:filename,
-									photographed_at:photographed_at,
-									created_at:new Date(),
+									photos:{
+										photo:filename,
+										photographed_at:photographed_at,
+										create_at:new Date()
 									}
-								},function(err,result){
+								}},function(err,result){
 									if(err) throw err;
 									callback();
 								});
